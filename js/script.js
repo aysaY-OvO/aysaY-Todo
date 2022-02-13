@@ -1,59 +1,56 @@
-'use strict';
-const controller = require('../server/src/todos-controller');
-
 document.addEventListener('DOMContentLoaded', () => {
-  const addForm = document.querySelector('.adding__form'),
-    addInput = document.querySelector('.adding__todo'),
-    todoList = document.querySelector('.todo__list');
+    const addForm = document.querySelector('.adding__form'),
+        addInput = document.querySelector('.adding__todo'),
+        todoList = document.querySelector('.todo__list');
 
-  let todoArr = [];
+    //Event Listeners
+    addForm.addEventListener('submit', createTodo);
+    todoList.addEventListener('click', deleteCheck);
 
-  function clearTodo(list) {
-    list.innerHTML = '';
-  }
-  clearTodo(todoList);
+    function createTodo() {
+        event.preventDefault();
+        const todoValue = addInput.value;
 
-  function createTodoList(todos, parent) {
-    clearTodo(parent);
+        const todo = document.createElement('li');
+        todo.classList.add('todo__item');
+        todo.append(todoValue);
 
-    todos.forEach((todo) => {
-      parent.innerHTML += `
-                <li class="todo__item">
-                    ${todo}
-                    <div class="todo__item_tools">
-                        <div class="todo__item_checkbox"><i class="far fa-check-circle"></i></div>
-                        <div class="trash__btn"><i class="far fa-trash-alt"></i></div>
-                    </div>
-                </li>
-            `;
-    });
-  }
+        const todoTools = document.createElement('div');
+        todoTools.classList.add('todo__item_tools');
 
-  addForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const newTodo = addInput.value;
+        //Create checkbox
+        const checkBox = document.createElement('div');
+        checkBox.classList.add('todo__item_checkbox');
+        const checkBoxIcon = document.createElement('i');
+        checkBoxIcon.classList.add('far', 'fa-check-circle');
+        checkBox.append(checkBoxIcon);
 
-    if (newTodo) {
-      controller.createTodos();
-      createTodoList(todoArr, todoList);
+        //Create trash button
+        const trashBtn = document.createElement('div');
+        trashBtn.classList.add('trash__btn');
+        const trashCan = document.createElement('i');
+        trashCan.classList.add('far', 'fa-trash-alt');
+        trashBtn.append(trashCan);
+
+        todoTools.append(trashBtn);
+        todoTools.append(checkBox);
+        todo.append(todoTools);
+        todoList.append(todo);
+        addForm.reset();
     }
 
-    addForm.reset();
-  });
+    function deleteCheck() {
+        const target = event.target;
+        const todo = target.parentElement.parentElement;
 
-  todoList.addEventListener('click', (e) => {
-    const target = e.target;
-    const todo = target.parentElement.parentElement;
-
-    if (target && target.classList[0] === 'trash__btn') {
-      todo.remove();
-      todoArr.forEach((i) => {
-        todoArr.splice(i, 1);
-      });
+        if (target && target.classList[0] === 'trash__btn') {
+            todo.remove();
+        }
+        if (target && target.classList[0] === 'todo__item_checkbox') {
+            todo.classList.toggle('checked');
+        }
     }
 
-    if (target && target.classList[0] === 'todo__item_checkbox') {
-      todo.classList.toggle('checked');
-    }
-  });
 });
+
+
